@@ -1,0 +1,25 @@
+{
+  "name": "polyv-little-blackboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env server/index.mjs",
+    "test": "node --test test/*.test.mjs",
+    "build": "tsc --noEmit && vite build",
+    "check:integration": "node --env-file-if-exists=.env scripts/check-integration.mjs",
+    "check:ai": "node --env-file-if-exists=.env scripts/check-ai.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "vite": "^6.4.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "optionalDependencies": {
+    "@ffmpeg-installer/darwin-arm64": "^4.1.5"
+  }
+}

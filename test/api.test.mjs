@@ -1,0 +1,58 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+test('真实HTTP链路：身份隔离、草稿不泄露、全部难点学员单次发布', {timeout:20000},async t=>{
+ const dir=await mkdtemp(join(tmpdir(),'blackboard-test-'));
+ const child=spawn(process.execPath,[fileURLToPath(new URL('../server/index.mjs',import.meta.url))],{cwd:dir,env:{...process.env,PORT:'4318',HOST:'127.0.0.1',ADMIN_PASSWORD:'test-password',SESSION_SECRET:'test-session-secret',POLYV_APP_ID:'',POLYV_APP_SECRET:'',POLYV_CHANNEL_ID:''},stdio:['ignore','pipe','pipe']});
+ t.after(async()=>{child.kill();await new Promise(resolve=>child.once('exit',resolve));await rm(dir,{recursive:true,force:true});});
+ await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('服务启动超时')),7000);child.stdout.on('data',data=>{if(data.toString().includes('运营后台')){clearTimeout(timer);resolve();}});child.once('exit',()=>{clearTimeout(timer);reject(new Error('服务提前退出'));});});
+ async function req(path,body,cookie=''){const r=await fetch('http://127.0.0.1:4318/api'+path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',Cookie:cookie},...(body===undefined?{}:{body:JSON.stringify(body)})});return {status:r.status,body:await r.json(),cookie:r.headers.get('set-cookie')?.split(';')[0]};}
+ assert.equal((await req('/admin/report')).status,401);
+ const admin=(await req('/admin/login',{password:'test-password'})).cookie;
+ const v1=await req('/viewer',{name:'小林'}),v2=await req('/viewer',{name:'小陈'});
+ const v3=await req('/viewer',{name:'仅划重点学员'});
+ const session=(await req('/admin/demo',{},admin)).body;
+ const mark={sessionId:session.id,channelId:'demo',kind:'difficulty',mediaTime:65,mediaDate:null,timing:'replay',layout:'video'};
+ const a=(await req('/marks',mark,v1.cookie)).body;
+ assert.equal((await req('/marks',mark,v1.cookie)).body.id,a.id);
+ await req('/marks',mark,v2.cookie);
+ await req('/marks',{...mark,kind:'highlight'},v1.cookie);
+ await req('/marks',{...mark,kind:'highlight'},v3.cookie);
+ assert.equal((await req('/marks/'+a.id+'/undo',{},v2.cookie)).status,400);
+ assert.deepEqual((await req('/records?sessionId='+session.id,undefined,v1.cookie)).body,[]);
+ await req('/admin/sessions/'+session.id+'/end',{},admin);
+ await req('/admin/sessions/'+session.id+'/analyze',{},admin);
+ const deadline=Date.now()+7000;let report=[];
+ while(Date.now()<deadline){report=(await req('/admin/report?sessionId='+session.id,undefined,admin)).body;if(report.length)break;await new Promise(r=>setTimeout(r,50));}
+ assert.equal(report.length,1);assert.equal(report[0].learners.length,2);
+ const before=(await req('/records?sessionId='+session.id,undefined,v1.cookie)).body;
+ assert.equal(before[0].publication,null);assert.equal(before[0].segment.explanation,undefined);assert.equal(before[0].segment.difficulty,undefined);
+ const body={segmentId:report[0].id,viewerIds:[v1.body.id],content:'审核后的补充解释',materialIds:['demo-doc']};
+ assert.equal((await req('/admin/publish',body,admin)).status,200);
+ assert.equal((await req('/admin/publish',body,admin)).status,400);
+ const received=(await req('/records?sessionId='+session.id,undefined,v1.cookie)).body;
+ const publishedRow=(await req('/admin/report?sessionId='+session.id,undefined,admin)).body[0].publication;assert.equal(publishedRow.viewerIds.length,2);assert.ok(publishedRow.viewerIds.includes(v2.body.id));
+ const difficulty=received.find(r=>r.kind==='difficulty'),highlight=received.find(r=>r.kind==='highlight');
+ assert.equal(difficulty.publication.content,'审核后的补充解释');assert.equal(difficulty.publication.materials[0].id,'demo-doc');assert.equal(highlight.publication,null);
+ const all=(await req('/records',undefined,v1.cookie)).body;assert.equal(all.length,2);
+ assert.equal((await req('/records/'+difficulty.id+'/replay',undefined,v1.cookie)).status,200);
+ assert.equal((await req('/records/'+difficulty.id+'/replay',undefined,v2.cookie)).status,200);
+ assert.equal((await req('/materials/demo-doc/preview',undefined,v1.cookie)).status,200);
+ assert.equal((await req('/materials/demo-doc/preview',undefined,v2.cookie)).status,200);
+ assert.equal((await req('/materials/demo-doc/preview',undefined,v3.cookie)).status,404);
+ assert.equal((await req('/records',undefined,v3.cookie)).body[0].publication,null);
+ const second=(await req('/admin/demo',{},admin)).body;await req('/marks',{...mark,sessionId:second.id},v1.cookie);
+ assert.equal((await req('/records',undefined,v1.cookie)).body.length,2);
+ await req('/admin/sessions/'+second.id+'/end',{},admin);
+ assert.equal((await req('/records',undefined,v1.cookie)).body.length,2);
+ await req('/admin/sessions/'+second.id+'/analyze',{},admin);
+ let mixed=[];for(let n=0;n<250;n++){mixed=(await req('/records',undefined,v1.cookie)).body;if(mixed.length===3)break;await new Promise(r=>setTimeout(r,30));}
+ assert.equal(mixed.length,3);assert.equal(mixed[0].sessionId,second.id);
+ assert.equal((await req('/records?sessionId='+session.id,undefined,v1.cookie)).body.length,2);
+ assert.equal((await req('/records?sessionId='+session.id,undefined,v2.cookie)).body[0].publication.content,'审核后的补充解释');
+ assert.equal((await req('/marks',mark,v1.cookie)).status,400);
+});

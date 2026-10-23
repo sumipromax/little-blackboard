@@ -1,0 +1,107 @@
+/* 自在课堂：只取黑板底色与轻纹理，保留课程画面的原色。 */
+body.watch-page{--chalk:#eeeede;--chalk-secondary:#c1ccc2;--chalk-muted:#9bad9f;--chalk-line:rgba(238,238,222,.14);--board:#15382e;background:var(--board);color:var(--chalk);min-height:100vh}
+body.watch-page:before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23ffffff' filter='url(%23grain)' opacity='.06' d='M0 0h240v240H0z'/%3E%3C/svg%3E");opacity:.6}
+body.watch-page header{background:rgba(12,34,28,.44);border-bottom:1px solid var(--chalk-line);height:80px;padding:0 40px}
+body.watch-page .brand{color:var(--chalk);gap:12px}
+body.watch-page .brand b{font-size:20px;line-height:28px;letter-spacing:2px;font-weight:500}
+.classroom-logo{width:44px;height:44px;object-fit:contain;border-radius:50%;background:#fff}
+body.watch-page nav{gap:32px}
+body.watch-page nav a{color:var(--chalk-secondary);border-bottom:2px solid transparent}
+body.watch-page nav a[aria-current]{color:var(--chalk);border-bottom-color:#e4d9b1}
+body.watch-page main{max-width:1560px;padding:24px 40px 48px}
+body.watch-page .classroom-context{justify-content:flex-end;min-height:36px;margin-bottom:16px}
+body.watch-page .classroom-settings summary{color:var(--chalk-secondary);font-size:12px;line-height:20px;min-height:36px;display:flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--chalk-line);border-radius:4px;list-style:none}
+body.watch-page .classroom-settings summary:after{content:'';width:6px;height:6px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg);margin-left:8px}
+body.watch-page .classroom-settings summary::-webkit-details-marker{display:none}
+body.watch-page .classroom-settings[open] summary{background:#ffffff0a;color:var(--chalk)}
+body.watch-page .classroom-settings .context-line{top:44px;right:0;background:#183b31;color:var(--chalk);border-color:var(--chalk-line);min-width:400px;box-shadow:0 12px 40px #07181066}
+body.watch-page .classroom-settings label{font-size:12px;color:var(--chalk-secondary)}
+body.watch-page .classroom-settings select{max-width:300px;width:100%;background:#102b24;border-color:var(--chalk-line);color:var(--chalk);font-size:14px}
+body.watch-page .classroom-settings button{background:#e8e5d5;color:#253b30;border-color:#e8e5d5}
+body.watch-page .watch-layout{grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:stretch}
+body.watch-page .lesson{background:rgba(10,30,24,.44);border:1px solid var(--chalk-line);border-radius:8px;overflow:hidden}
+body.watch-page .lesson-title{padding:20px 24px;gap:16px;background:transparent;min-height:72px}
+body.watch-page .lesson-title h1{color:var(--chalk);font-size:16px;line-height:24px;margin:0;font-weight:500}
+body.watch-page .lesson-title .status{background:none;border:0;border-radius:0;color:var(--chalk-secondary);padding:0;display:inline-flex;align-items:center;gap:8px;font-size:12px;line-height:20px;white-space:nowrap}
+body.watch-page .status:before{content:'';width:6px;height:6px;flex-shrink:0;border-radius:50%;background:#9bad9f}
+body.watch-page .status[data-status=live]:before{background:#74d99a;box-shadow:0 0 8px #74d99a26}
+body.watch-page .status[data-status=waiting]:before{background:#e5c67a}
+body.watch-page .status[data-status=replay]:before{background:#8fb9e7}
+body.watch-page .status[data-status=blocked]:before{background:#ef9292}
+body.watch-page .status[data-status=ended]:before{background:#a2b3a8}
+body.watch-page .player-shell{background:#0d211b}
+body.watch-page .player-shell #player{background:#0b1713;width:100%;aspect-ratio:16/9;min-height:0}
+body.watch-page .player-shell .empty{color:var(--chalk-secondary);min-height:280px;font-size:14px}
+body.watch-page .player-shell .empty h2{color:var(--chalk);font-size:16px}
+body.watch-page .mark-bar{background:#112c24;color:var(--chalk);display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border:0;border-top:1px solid var(--chalk-line);min-height:72px;gap:16px}
+body.watch-page .mark-actions{display:flex;gap:12px}
+body.watch-page .mark-control{display:inline-flex;cursor:not-allowed}
+body.watch-page .mark-control:has(button:not(:disabled)){cursor:default}
+body.watch-page .mark-control button{background:transparent;color:var(--chalk);border:1px solid #d6decc55;border-radius:4px;min-height:40px;min-width:112px;padding:8px 16px;font-size:14px;line-height:22px}
+body.watch-page .mark-control button svg{color:#eddaad;width:18px;height:18px}
+body.watch-page .mark-control button:disabled{opacity:.4;pointer-events:none}
+body.watch-page .mark-control button:hover:not(:disabled){background:#ffffff0a;border-color:#e1d6b1;color:var(--chalk)}
+body.watch-page #open-records{background:transparent;color:#e9ddba;border:0;min-height:40px;min-width:100px;font-size:14px;line-height:22px;padding:8px 0 8px 12px;gap:8px}
+body.watch-page #open-records svg{color:inherit;width:20px;height:20px}
+body.watch-page #open-records:hover{color:#fff4d4;background:transparent}
+body.watch-page .classroom-chat{background:rgba(10,30,24,.56);border:1px solid var(--chalk-line);border-radius:8px;position:static;min-height:0;height:auto;max-height:calc(100vh - 180px);color:var(--chalk)}
+body.watch-page .chat-heading{border-bottom:1px solid var(--chalk-line);padding:24px;min-height:72px}
+body.watch-page .chat-heading h2{color:var(--chalk);font-size:16px;line-height:24px;margin:0}
+body.watch-page .chat-messages{padding:24px 20px;min-height:220px;flex:1}
+body.watch-page .chat-empty{color:var(--chalk-muted);font-size:12px;line-height:18px}
+body.watch-page .chat-empty span{display:none}
+body.watch-page .chat-avatar{color:#c7d7cd;background:#2b4c40}
+body.watch-page .chat-meta{color:var(--chalk-muted);font-size:12px}
+body.watch-page .chat-meta small{color:#e4d4a2;background:#e4d4a218}
+body.watch-page .chat-message p{color:var(--chalk);line-height:22px}
+body.watch-page #chat-form{padding:16px;border-top:1px solid var(--chalk-line)}
+body.watch-page #chat-input{height:96px;min-height:96px;max-height:96px;resize:none;background:#0e271f;color:var(--chalk);border:1px solid #c8d5c329;border-radius:4px;line-height:22px;padding:12px;font-size:14px}
+body.watch-page #chat-input::placeholder{color:#a1b1a5}
+body.watch-page #chat-input:focus{background:#0e271f;border-color:#d4cfb0;outline:0;box-shadow:0 0 0 2px #d4cfb016}
+body.watch-page #chat-input:disabled{background:#0c231b;color:var(--chalk-muted)}
+body.watch-page .chat-composer-footer{margin-top:12px;gap:12px;align-items:center}
+body.watch-page #chat-status{color:#e3bd92;font-size:12px;line-height:18px}
+body.watch-page #chat-status:empty{display:none}
+body.watch-page .chat-composer-footer button{margin-left:auto;height:36px;min-height:36px;min-width:64px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:20px;background:#e8e5d5;color:#253b30;border-color:#e8e5d5}
+body.watch-page .chat-composer-footer button:hover:not(:disabled){background:#f3eedb;color:#253b30}
+body.watch-page .chat-composer-footer button:disabled{opacity:.35}
+body.watch-page .undo-toast{bottom:88px;background:#f1efdf;color:#213d30;border:0;box-shadow:0 8px 32px #0003}
+body.watch-page .undo-toast .link{color:#315d45}
+body.watch-page button:focus-visible,body.watch-page a:focus-visible,body.watch-page summary:focus-visible{outline-color:#e8d8a8}
+body.watch-page .player-shell:fullscreen{height:100vh;width:100vw}
+body.watch-page .player-shell:fullscreen #player{aspect-ratio:auto;flex:1;min-height:0}
+body.watch-page .player-shell:fullscreen .mark-bar{flex-shrink:0}
+body.watch-page .entry{background:#102e25;border:1px solid var(--chalk-line);color:var(--chalk)}
+body.watch-page .entry h1{color:var(--chalk)}
+body.watch-page .entry .muted,body.watch-page .entry .hint,body.watch-page .entry label{color:var(--chalk-secondary)}
+body.watch-page .entry input{background:#0e271f;color:var(--chalk);border-color:var(--chalk-line)}
+body.watch-page .entry .primary{background:#e8e5d5;color:#253b30;border-color:#e8e5d5}
+@media(max-width:1100px){body.watch-page main{padding:20px 24px 40px}body.watch-page .watch-layout{grid-template-columns:minmax(0,1fr) 288px;gap:16px}body.watch-page header{padding:0 24px}body.watch-page .mark-bar{padding:12px 16px}body.watch-page .mark-control button{min-width:100px;padding:8px 12px}body.watch-page .mark-actions{gap:8px}body.watch-page .lesson-title,body.watch-page .chat-heading{padding:20px 16px}}
+@media(max-width:760px){body.watch-page header{height:68px;padding:0 16px}body.watch-page .brand b{font-size:16px;letter-spacing:1px}body.watch-page .classroom-logo{width:36px;height:36px}body.watch-page nav{gap:16px}body.watch-page nav a{font-size:12px}body.watch-page main{padding:16px 12px 32px}body.watch-page .watch-layout{grid-template-columns:1fr}body.watch-page .classroom-chat{height:420px;max-height:none}body.watch-page .classroom-settings .context-line{width:calc(100vw - 24px);min-width:0}body.watch-page .classroom-settings select{max-width:100%}body.watch-page .lesson-title{padding:16px;min-height:64px}body.watch-page .lesson-title h1{font-size:14px;line-height:22px}body.watch-page .mark-bar{padding:12px;gap:8px}body.watch-page .mark-control button{font-size:12px;min-width:88px;padding:8px;gap:4px}body.watch-page #open-records{min-width:80px;font-size:12px;gap:4px;padding-left:4px}body.watch-page .chat-heading{padding:16px;min-height:60px}}
+body.watch-page{isolation:isolate}
+@media(min-width:761px){body.watch-page .player-shell #player{max-height:calc(100vh - 304px)}}
+/* Keep the secondary classroom switch beside the course title. */
+body.watch-page .lesson-title{position:relative;z-index:6}
+body.watch-page .course-heading{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-width:0;flex:1}
+body.watch-page .lesson-title .classroom-settings{position:static;flex-shrink:0}
+body.watch-page .lesson-title .classroom-settings summary{border:0;background:transparent;padding:4px 0;color:var(--chalk-muted);min-height:36px;font-size:12px;gap:4px}
+body.watch-page .lesson-title .classroom-settings summary:after{width:5px;height:5px;margin-left:4px}
+body.watch-page .lesson-title .classroom-settings summary:hover,body.watch-page .lesson-title .classroom-settings[open] summary{color:var(--chalk-secondary);background:transparent}
+body.watch-page .lesson-title .classroom-settings .context-line{left:24px;right:auto;top:calc(100% - 8px);width:min(400px,calc(100% - 48px));min-width:0}
+@media(max-width:760px){body.watch-page .course-heading{gap:8px}body.watch-page .lesson-title .classroom-settings .context-line{left:16px;width:calc(100% - 32px)}}
+/* Inset the select affordance and make disabled-action feedback immediate. */
+body.watch-page .classroom-settings select{appearance:none;-webkit-appearance:none;padding:8px 40px 8px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23c1ccc2' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:16px 16px;background-position:right 16px center}
+body.watch-page .mark-control{position:relative}
+body.watch-page .mark-control:after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);padding:8px 12px;border-radius:4px;background:#eeeede;color:#213b30;font-size:12px;line-height:18px;white-space:nowrap;box-shadow:0 4px 16px #0003;opacity:0;visibility:hidden;pointer-events:none;z-index:20}
+body.watch-page .mark-control[data-tooltip]:not([data-tooltip=""]):has(button:disabled):hover:after{opacity:1;visibility:visible}
+/* Let the lesson determine the desktop row height; scroll messages internally. */
+@media(min-width:761px){
+ body.watch-page .classroom-chat{height:auto;max-height:none;min-height:0;contain:size;align-self:stretch}
+ body.watch-page .chat-heading,body.watch-page #chat-form{flex-shrink:0}
+ body.watch-page .chat-messages{min-height:0;overflow-y:auto}
+}
+/* Align the switch fields and keep the action compact. */
+body.watch-page .lesson-title .classroom-settings .context-line{gap:16px}
+body.watch-page .classroom-settings .context-line label{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:12px;width:100%}
+body.watch-page .classroom-settings .context-line select{width:100%;max-width:none;min-width:0}
+body.watch-page .classroom-settings #connect-real{justify-self:end;width:auto;min-height:36px;padding:0 16px;line-height:22px;margin-top:4px}
